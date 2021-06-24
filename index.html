@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>showtime</title>
+  <script src="jquery.js"></script>
+  <style>
+  @font-face {
+  font-family: "nhaasgroteskdspro-95blk";
+  src: url(nhaasgroteskdspro-95blk.woff);
+}
+
+
+body{
+  margin: 0;
+  padding: 0;
+}
+
+  #site-footer{
+  display: none;
+  }
+
+  #primary-menu{
+  display: none;
+  }
+
+  .directorySlider{
+  width: 100vw;
+  height: 100vh;
+  }
+
+  .directorySlider img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  }
+
+
+.sc_showtime-countdown{
+    text-align: center;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+
+
+.sc_showtime-countdown li {
+  display: inline-block;
+  list-style-type: none;
+  padding: 2vw;
+  width: 18vw;
+}
+
+
+.sc_showtime-countdown li span {
+  display: block;
+}
+
+.sc_showtime-countdown .small{
+  font-size: 14px !important;
+}
+
+.sc_showtime-countdown h1 {
+    color: white;
+    margin-bottom: 0;
+    line-height: 1;
+    height: 7vw;
+    font-size: 11vw;
+    text-shadow: 2px 2px 6px #00000040;
+    font-family: "nhaasgroteskdspro-95blk";
+}
+
+.sc_showtime-countdown h6 {
+    color: white;
+  text-shadow: 2px 2px 6px #00000040;
+  font-family: "nhaasgroteskdspro-95blk";
+  text-transform: uppercase;
+  font-size: 1.5vw;
+}
+
+.showtimeLogo{
+  position: absolute;
+  right: 40px;
+  bottom: 40px;
+  width: 25%;
+}
+
+.islogo{
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 15%;
+}
+
+  @media only screen and (max-width: 1000px) {
+  
+   .sc_showtime-countdown li {
+    min-width: 80px;
+  }
+    
+  }
+
+  </style>
+</head>
+<body>
+<div class="directorySlider"></div>
+<div class="sc_showtime-countdown">
+  <div id="countdown">
+    <ul>
+      <li><h1 id="days"></h1><h6>Days</h6></li>
+      <li><h1 id="hours"></h1><h6>Hours</h6></li>
+      <li><h1 id="minutes"></h1><h6>Minutes</h6></li>
+      <li><h1 id="seconds"></h1><h6>Seconds</h6></li>
+    </ul>
+  </div>
+</div>
+  <img src="showtime-logo.svg" class="showtimeLogo">
+
+<img src="isLogo.svg" class="islogo">
+
+
+<script type="text/javascript">
+
+
+(function($){
+   var directorySlider = function(element, options)
+   {
+       var elem = $(element),
+           obj = this,
+           elemId = elem[0].id;
+
+       // Merge config settings
+       var config = $.extend({
+           animation: 'slide',
+           filebase: 'slide_',
+           extension: 'jpg',
+           speed: 1000,
+           timeout: 4000,
+           directory: null,
+           numslides: null,
+           height: null,
+           width: null
+       }, options || {});
+
+       // set slideshow dimensions if set
+       if (config.height) {
+        $(elem).css('height', config.height);
+       }
+       if (config.width) {
+        $(elem).css('width', config.width);
+       }
+
+       $(elem).css('overflow', 'hidden');
+
+       // Get slides
+       var slides = [],
+       slideNumber = 1;
+
+       while(slideNumber <= config.numslides){
+         slides.push('<img src="' + config.directory + config.filebase + slideNumber + '.' + config.extension + '" />');
+         slideNumber++;
+       }
+
+       // append slideshow
+       // apply slide wrap 1st
+       var slideWrap = $('<div class="' + elemId + '-slide-wrap" ></div>');
+           slideWrap.appendTo(elem);
+
+        // append slide and position absolutley
+       $.each(slides, function(index, val) {
+         $(val).css({
+           position: 'absolute',
+           top: 0,
+           left: 0,
+           width: config.width // ADDED THIS SO WE DON'T NEED TO HAVE ALL IMAGES WITH SAME HEIGHT & WIDTH
+         }).appendTo(slideWrap);
+       });
+
+    setInterval(function(){
+       var firstSlide = elem.find('img:first-child'),
+           lastSlide = elem.find('img:last-child');
+       // Apply animation
+       switch(config.animation){
+
+        case 'fade':
+            $(lastSlide).animate({
+              opacity: 0},
+              config.speed, function() {
+              $(this).insertBefore(firstSlide).css('opacity', 1);
+            });
+        break;
+
+        case 'uncover':
+            lastSlide.animate({
+              marginLeft: -$(this).width()},
+              config.speed, function() {
+              $(this).insertBefore(firstSlide).css('marginLeft', 0);
+            });
+            break;
+        default:
+            $(lastSlide).animate({
+              opacity: 0},
+              config.speed, function() {
+              $(this).insertBefore(firstSlide).css('opacity', 1);
+            });
+       }
+    }, config.timeout);
+
+   };
+
+   $.fn.directorySlider = function(options)
+   {
+       return this.each(function()
+       {
+           var element = $(this);
+
+           // Return early if this element already has a plugin instance
+           if (element.data('directoryslider')) return;
+
+           // pass options to plugin constructor
+           var directoryslider = new directorySlider(this, options);
+
+           // Store plugin object in this element's data
+           element.data('directoryslider', directoryslider);
+
+       });
+   };
+})(jQuery);
+
+
+
+$(document).ready(function(){
+  $('.directorySlider').directorySlider({
+  animation: 'fade',
+  filebase: 'slide_',
+  directory: 'slider/',
+  extension: 'jpg',
+  timeout: '5000',
+  numslides: '764'
+
+});
+});
+
+
+
+
+(function () {
+  const second = 1000,
+        minute = second * 60,
+        hour = minute * 60,
+        day = hour * 24;
+
+  let birthday = "Jun 29, 2021 16:30:00",
+      countDown = new Date(birthday).getTime(),
+      x = setInterval(function() {    
+
+        let now = new Date().getTime(),
+            distance = countDown - now;
+      
+
+          document.getElementById("days").innerText = Math.floor(distance / (day)),
+          document.getElementById("hours").innerText = Math.floor((distance % (day)) / (hour)),
+          document.getElementById("minutes").innerText = Math.floor((distance % (hour)) / (minute)),
+          document.getElementById("seconds").innerText = Math.floor((distance % (minute)) / second);
+      
+     var daystext = document.getElementById("days").innerText
+     var hourstext = document.getElementById("hours").innerText
+     var minutestext = document.getElementById("minutes").innerText
+     var secondstext = document.getElementById("seconds").innerText
+     
+     document.getElementById("days").innerText = ('0' + daystext).slice(-2)
+    document.getElementById("hours").innerText  = ('0' + hourstext).slice(-2) 
+    document.getElementById("minutes").innerText  = ('0' + minutestext).slice(-2)
+    document.getElementById("seconds").innerText  = ('0' + secondstext).slice(-2)
+    
+    
+        if (distance < 0) {
+          let  countdown = document.getElementById("countdown")
+
+          countdown.style.display = "none";
+
+          clearInterval(x);
+        }
+      }, 0)
+  }());
+
+
+</script>
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
