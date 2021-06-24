@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>showtime</title>
   <script src="jquery.js"></script>
+
   <style>
   @font-face {
   font-family: "nhaasgroteskdspro-95blk";
@@ -127,7 +128,31 @@ body{
 <img src="isLogo.svg" class="islogo">
 
 
+  <script>
+        window.lazySizesConfig = window.lazySizesConfig || {};
+
+        //window.lazySizesConfig.preloadAfterLoad = true;
+        window.lazySizesConfig.expand = 10;
+  </script>
+
+  <script src="ls.unveilhooks.min.js" async=""></script>
+
+  <script src="lazysizes.min.js" async=""></script>
+
+
 <script type="text/javascript">
+
+    function loadJS(u){var r=document.getElementsByTagName("script")[ 0 ],s=document.createElement("script");s.src=u;r.parentNode.insertBefore(s,r);}
+
+    if(!window.HTMLPictureElement || !('sizes' in document.createElement('img'))){
+      document.createElement('picture');
+      //generating the config array
+      window.picturefillCFG = window.picturefillCFG || [];
+      picturefillCFG.push([ "algorithm", "saveData" ]);
+
+      loadJS("https://cdnjs.cloudflare.com/ajax/libs/picturefill/3.0.0-beta1/picturefill.min.js");
+    }
+  
 
 
 (function($){
@@ -142,7 +167,7 @@ body{
            animation: 'slide',
            filebase: 'slide_',
            extension: 'jpg',
-           speed: 1000,
+           speed: 300,
            timeout: 4000,
            directory: null,
            numslides: null,
@@ -165,13 +190,13 @@ body{
        slideNumber = 1;
 
        while(slideNumber <= config.numslides){
-         slides.push('<img src="' + config.directory + config.filebase + slideNumber + '.' + config.extension + '" />');
+         slides.push('<img class="lazyload" data-src="' + config.directory + config.filebase + slideNumber + '.' + config.extension + '" />');
          slideNumber++;
        }
 
        // append slideshow
        // apply slide wrap 1st
-       var slideWrap = $('<div class="' + elemId + '-slide-wrap" ></div>');
+       var slideWrap = $('<div id="' + elemId + '-slide-wrap" ></div>');
            slideWrap.appendTo(elem);
 
         // append slide and position absolutley
@@ -244,7 +269,7 @@ $(document).ready(function(){
   directory: 'slider/',
   extension: 'jpg',
   timeout: '5000',
-  numslides: '764'
+  numslides: '734'
 
 });
 });
